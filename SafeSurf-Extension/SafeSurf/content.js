@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((message) => {
 function showWarning(url) {
   const warning = document.createElement("div");
   warning.innerHTML = `
-    ⚠️ <b>SafeSurf Alert</b><br>
+     <b>SafeSurf Alert</b><br>
     This website looks suspicious:<br>
     <small>${url}</small><br>
     Do NOT enter your password!
@@ -30,5 +30,5 @@ function showWarning(url) {
 const passwordFields = document.querySelectorAll("input[type='password']");
 
 if (passwordFields.length > 0) {
-  alert("⚠️ SafeSurf Warning: This page asks for a password. Make sure the site is safe!");
+  alert("SafeSurf Warning: This page asks for a password. Make sure the site is safe!");
 }
