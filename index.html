@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SafeSurf</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:radial-gradient(circle at top,#0f2a44,#020617 60%);
+  color:#e5e7eb;
+}
+
+/* HERO */
+.hero{
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.hero h1{
+  font-size:64px;
+  color:#38bdf8;
+  text-shadow:0 0 15px rgba(56,189,248,0.6);
+}
+.hero p{
+  margin-bottom:30px;
+}
+
+/* CARDS */
+.options{
+  display:flex;
+  gap:30px;
+  justify-content:center;
+  margin-bottom:30px;
+  flex-wrap:wrap;
+}
+.option{
+  background:#0f172a;
+  border:1px solid #1e293b;
+  padding:20px;
+  width:220px;
+  border-radius:12px;
+  cursor:pointer;
+}
+.option:hover{
+  box-shadow:0 0 15px rgba(56,189,248,0.4);
+}
+
+/* BUTTON */
+button{
+  background:#38bdf8;
+  border:none;
+  padding:12px 25px;
+  border-radius:25px;
+  cursor:pointer;
+  font-weight:bold;
+}
+button:hover{background:#0ea5e9}
+
+/* SECTIONS */
+.section{
+  display:none;
+  max-width:700px;
+  margin:30px auto;
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:12px;
+  padding:20px;
+}
+input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border-radius:6px;
+  border:none;
+}
+.result{font-weight:bold}
+.safe{color:lightgreen}
+.danger{color:red}
+</style>
+</head>
+
+<body>
+
+<!-- HERO HOMEPAGE -->
+<div class="hero">
+  <div>
+    <h1>SafeSurf</h1>
+    <p>Making internet surfing safer!</p>
+
+    <div class="options">
+      <div class="option" onclick="openSection('link')">🔗 Fake Link Detector</div>
+      <div class="option" onclick="openSection('pass')">🔐 Password Manager</div>
+      <div class="option" onclick="openSection('tips')">🛡 Internet Safety Tips</div>
+    </div>
+
+    <a href="SafeSurf-Extension.zip" download>
+      <button>Download Browser Extension</button>
+    </a>
+  </div>
+</div>
+
+<!-- FAKE LINK -->
+<div class="section" id="link">
+<h2>🔗 Fake Link Detector</h2>
+<input id="linkInput" placeholder="Enter link">
+<button onclick="checkLink()">Check</button>
+<p id="linkResult" class="result"></p>
+</div>
+
+<!-- PASSWORD -->
+<div class="section" id="pass">
+<h2>🔐 Password Manager</h2>
+<input id="site" placeholder="Website">
+<input id="user" placeholder="Username">
+<input id="passw" type="password" placeholder="Password">
+<button onclick="savePassword()">Save</button>
+<ul id="plist"></ul>
+</div>
+
+<!-- TIPS -->
+<div class="section" id="tips">
+<h2>🛡 Internet Safety Tips</h2>
+<ul>
+<li>Always check URL spelling</li>
+<li>Never click unknown links</li>
+<li>Use strong passwords</li>
+<li>Enable 2FA</li>
+<li>Avoid public WiFi</li>
+</ul>
+</div>
+
+<script>
+function openSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.style.display="none");
+  document.getElementById(id).style.display="block";
+  window.scrollTo(0,document.body.scrollHeight);
+}
+
+// Fake link logic
+function checkLink(){
+  const l=linkInput.value.toLowerCase();
+  const bad=["free","login","verify","gift","bank"];
+  if(!l.startsWith("http")||bad.some(w=>l.includes(w))){
+    linkResult.innerText="🚨 This link may be dangerous!";
+    linkResult.className="result danger";
+  }else{
+    linkResult.innerText="✅ This link looks safe";
+    linkResult.className="result safe";
+  }
+}
+
+// Password manager
+function savePassword(){
+  const data=JSON.parse(localStorage.getItem("p"))||[];
+  data.push({s:site.value,u:user.value,p:passw.value});
+  localStorage.setItem("p",JSON.stringify(data));
+  load();
+}
+function load(){
+  plist.innerHTML="";
+  const data=JSON.parse(localStorage.getItem("p"))||[];
+  data.forEach(x=>{
+    const li=document.createElement("li");
+    li.innerText=`${x.s} | ${x.u} | ${x.p}`;
+    plist.appendChild(li);
+  });
+}
+load();
+</script>
+
+</body>
+</html>
