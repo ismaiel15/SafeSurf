@@ -29,7 +29,7 @@ body{
   margin-bottom:30px;
 }
 
-/* CARDS */
+/* OPTIONS */
 .options{
   display:flex;
   gap:30px;
@@ -85,7 +85,7 @@ input{
 
 <body>
 
-<!-- HERO HOMEPAGE -->
+<!-- HOMEPAGE -->
 <div class="hero">
   <div>
     <h1>SafeSurf</h1>
@@ -103,66 +103,93 @@ input{
   </div>
 </div>
 
-<!-- FAKE LINK -->
+<!-- FAKE LINK DETECTOR -->
 <div class="section" id="link">
 <h2>🔗 Fake Link Detector</h2>
-<input id="linkInput" placeholder="Enter link">
-<button onclick="checkLink()">Check</button>
+<input id="linkInput" placeholder="Enter website link">
+<button onclick="checkLink()">Check Link</button>
 <p id="linkResult" class="result"></p>
 </div>
 
-<!-- PASSWORD -->
+<!-- PASSWORD MANAGER -->
 <div class="section" id="pass">
 <h2>🔐 Password Manager</h2>
 <input id="site" placeholder="Website">
-<input id="user" placeholder="Username">
+<input id="user" placeholder="Username / Email">
 <input id="passw" type="password" placeholder="Password">
-<button onclick="savePassword()">Save</button>
+<button onclick="savePassword()">Save Password</button>
 <ul id="plist"></ul>
 </div>
 
-<!-- TIPS -->
+<!-- SAFETY TIPS -->
 <div class="section" id="tips">
 <h2>🛡 Internet Safety Tips</h2>
 <ul>
 <li>Always check URL spelling</li>
 <li>Never click unknown links</li>
 <li>Use strong passwords</li>
-<li>Enable 2FA</li>
-<li>Avoid public WiFi</li>
+<li>Enable two-factor authentication</li>
+<li>Avoid public Wi-Fi</li>
 </ul>
 </div>
 
 <script>
+// Show sections
 function openSection(id){
   document.querySelectorAll('.section').forEach(s=>s.style.display="none");
   document.getElementById(id).style.display="block";
   window.scrollTo(0,document.body.scrollHeight);
 }
 
-// Fake link logic
+// ✅ FIXED Fake Link Detector (Google bug solved)
 function checkLink(){
-  const l=linkInput.value.toLowerCase();
-  const bad=["free","login","verify","gift","bank"];
-  if(!l.startsWith("http")||bad.some(w=>l.includes(w))){
-    linkResult.innerText="🚨 This link may be dangerous!";
-    linkResult.className="result danger";
-  }else{
-    linkResult.innerText="✅ This link looks safe";
-    linkResult.className="result safe";
+  const l = linkInput.value.trim().toLowerCase();
+
+  const trustedSites = [
+    "google.com",
+    "www.google.com",
+    "youtube.com",
+    "github.com",
+    "amazon.in",
+    "amazon.com",
+    "microsoft.com"
+  ];
+
+  const riskyWords = ["free","login","verify","gift","bank","secure"];
+
+  // normalize
+  const normalized = l.startsWith("http") ? l : "https://" + l;
+
+  // trusted check
+  if (trustedSites.some(site => normalized.includes(site))) {
+    linkResult.innerText = "✅ This link looks safe (trusted website)";
+    linkResult.className = "result safe";
+    return;
   }
+
+  // risky check
+  if (riskyWords.some(word => normalized.includes(word))) {
+    linkResult.innerText = "🚨 This link may be dangerous!";
+    linkResult.className = "result danger";
+    return;
+  }
+
+  // default safe
+  linkResult.innerText = "✅ This link looks safe";
+  linkResult.className = "result safe";
 }
 
-// Password manager
+// Password Manager
 function savePassword(){
-  const data=JSON.parse(localStorage.getItem("p"))||[];
+  const data = JSON.parse(localStorage.getItem("passwords")) || [];
   data.push({s:site.value,u:user.value,p:passw.value});
-  localStorage.setItem("p",JSON.stringify(data));
+  localStorage.setItem("passwords",JSON.stringify(data));
   load();
 }
+
 function load(){
   plist.innerHTML="";
-  const data=JSON.parse(localStorage.getItem("p"))||[];
+  const data = JSON.parse(localStorage.getItem("passwords")) || [];
   data.forEach(x=>{
     const li=document.createElement("li");
     li.innerText=`${x.s} | ${x.u} | ${x.p}`;
